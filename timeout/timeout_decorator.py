@@ -21,14 +21,15 @@ class _FunctionProcess(multiprocessing.Process):
     def _run_function(self, function: typing.Callable, *args, **kwargs):
         try:
             result = function(*args, **kwargs)
-            self._queue.put((True, result))
         except Exception as e:
             self._queue.put((False, e))
+        else:
+            self._queue.put((True, result))
 
-    def done(self):
+    def done(self) -> bool:
         return self._queue.full()
 
-    def result(self):
+    def result(self) -> typing.Tuple[bool, typing.Any]:
         return self._queue.get()
 
     @property
