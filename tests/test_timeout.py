@@ -7,17 +7,19 @@ import unittest
 from timeout import timeout, TimeoutException
 
 
+@timeout(duration=0.5)
+def blocking_function(a, b):
+    while True:
+        time.sleep(1)
+
+
+@timeout(duration=0.5)
+def not_blocking_function(a, b):
+    time.sleep(0.1)
+    return a / b
+
+
 class TestTimeout(unittest.TestCase):
-
-    @timeout(duration=0.5)
-    def blocking_function(self):
-        while True:
-            time.sleep(1)
-
-    @timeout(duration=0.5)
-    def not_blocking_function(self, a, b):
-        time.sleep(0.1)
-        return a / b
 
     def test_terminates_blocking_function(self):
         """
@@ -27,10 +29,12 @@ class TestTimeout(unittest.TestCase):
         TimeoutException is raised
         """
 
-        expected_msg = 'blocking_function - Timed out after 0.5 seconds'
+        a = 1
+        b = 2
+        expected_msg = 'blocking_function(1, b=2) - Timed out after 0.5 seconds'
 
         with self.assertRaises(TimeoutException) as context:
-            self.blocking_function()
+            blocking_function(a, b=b)
 
         self.assertEqual(expected_msg, str(context.exception))
 
@@ -43,7 +47,7 @@ class TestTimeout(unittest.TestCase):
         b = 25
         expected = a / b
 
-        result = self.not_blocking_function(a, b=b)
+        result = not_blocking_function(a, b=b)
 
         self.assertEqual(expected, result)
 
@@ -53,6 +57,6 @@ class TestTimeout(unittest.TestCase):
         function it's being reraised
         """
         with self.assertRaises(ZeroDivisionError):
-            self.not_blocking_function(1, 0)
+            not_blocking_function(1, 0)
 
 

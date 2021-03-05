@@ -3,12 +3,16 @@ import typing
 
 
 class TimeoutException(Exception):
-    def __init__(self, function_name: str, duration: typing.Union[float, int]):
+    def __init__(self, function_name: str, call_args: typing.Tuple, call_kwargs: typing.Dict,
+                 duration: typing.Union[float, int]):
         self._function_name = function_name
+        self._args_str = ', '.join(str(arg) for arg in call_args)
+        self._kwargs_str = ', '.join(f'{k}={v}' for k, v in call_kwargs.items())
         self._duration = duration
 
     def __str__(self) -> str:
-        return f'{self._function_name} - Timed out after {self._duration} seconds'
+        return f'{self._function_name}({self._args_str}{", " if self._args_str and self._kwargs_str else ""}' \
+               f'{self._kwargs_str}) - Timed out after {self._duration} seconds'
 
 
 class _FunctionProcess(multiprocessing.Process):
@@ -46,7 +50,8 @@ def timeout(duration: typing.Union[int, float], force_kill: bool = True):
             if process.is_alive():
                 if force_kill is True:
                     process.terminate()
-                raise TimeoutException(function_name=process.function_name, duration=duration)
+                raise TimeoutException(function_name=process.function_name, call_args=args,
+                                       call_kwargs=kwargs, duration=duration)
             assert process.done()
             success, result = process.result()
             if success:

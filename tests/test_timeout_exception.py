@@ -27,8 +27,11 @@ class TestTimeoutExceptionInstance(unittest.TestCase):
     """
     def setUp(self) -> None:
         self.func_name = 'some function'
+        self.args = ('arg1', 'arg2')
+        self.kwarg = {'key1': 'value1', 'key2': 'value2'}
         self.duration = 123
-        self.exception = TimeoutException(function_name=self.func_name, duration=self.duration)
+        self.exception = TimeoutException(function_name=self.func_name, call_args=self.args,
+                                          call_kwargs=self.kwarg, duration=self.duration)
 
     def test_instance_attrs(self):
         """
@@ -46,6 +49,10 @@ class TestTimeoutExceptionInstance(unittest.TestCase):
         function name and timeout duration
         is returned
         """
-        expected = f'{self.func_name} - Timed out after {self.duration} seconds'
+        args_str = ', '.join(self.args)
+        kwargs_str = ', '.join(f'{k}={v}' for k, v in self.kwarg.items())
+        expected = f'{self.func_name}({args_str}, {kwargs_str}) ' \
+                   f'- Timed out after {self.duration} seconds'
 
         self.assertEqual(expected, self.exception.__str__())
+
