@@ -4,7 +4,7 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/py-timeout.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-timeout.svg)
 ![PyPI](https://img.shields.io/pypi/v/py-timeout.svg)
-![PyPI - License](https://img.shields.io/pypi/py-timeout.svg)
+![PyPI - License](https://img.shields.io/pypi/l/py-timeout)
 
 ----
 py-timeout - pure Python process based decorator that provides execution timeout for Python functions and methods. Since it is not based on signals, py-timeout works fine outside the main thread.
